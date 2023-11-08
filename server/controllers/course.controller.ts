@@ -6,6 +6,9 @@ import { createCourse } from "../services/course.service";
 import courseModel from "../models/course.model";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
+import ejs from "ejs";
+import path from "path";
+import sendMail from "../utils/sendMail";
 
 // upload new course
 export const uploadCourse = CatchAsyncErrors(
@@ -189,8 +192,8 @@ export const addQuestion = CatchAsyncErrors(
         return next(new ErrorHandler("Invalid content id", 400));
       }
 
-      const content = course?.courseData.find((item: any) =>
-        item._id.equals(contentId) // equals works but === doesn't - cause id is ObjectId in mongodb and their ref is not same hence === is false ?
+      const content = course?.courseData.find(
+        (item: any) => item._id.equals(contentId) // equals works but === doesn't - cause id is ObjectId in mongodb and their ref is not same hence === is false ?
       );
 
       if (!content) {
@@ -206,6 +209,86 @@ export const addQuestion = CatchAsyncErrors(
       content.questions.push(newQuestion);
 
       await course?.save();
+
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+interface IAddAnswerData {
+  courseId: string;
+  contentId: string;
+  questionId: string;
+  answer: string;
+}
+
+// add answer to question in course
+export const addAnswer = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { courseId, contentId, questionId, answer }: IAddAnswerData =
+        req.body;
+
+      const course = await courseModel.findById(courseId);
+
+      if (!mongoose.Types.ObjectId.isValid(contentId)) {
+        return next(new ErrorHandler("Invalid content id", 400));
+      }
+
+      const content = course?.courseData.find((item: any) =>
+        item._id.equals(contentId)
+      );
+
+      if (!content) {
+        return next(new ErrorHandler("Invalid content id", 400));
+      }
+
+      const question = content.questions.find((item: any) =>
+        item._id.equals(questionId)
+      );
+
+      if (!question) {
+        return next(new ErrorHandler("Invalid question id", 400));
+      }
+
+      const newAnswer: any = {
+        answer,
+        user: req.user,
+      };
+
+      question.questionReplies?.push(newAnswer);
+      await course?.save();
+
+      if (req.user?._id === question.user._id) {
+        // notification
+      } else {
+        // mail
+        const data = {
+          name: question.user.name,
+          title: content.title,
+        };
+
+        const html = ejs.renderFile(
+          path.join(__dirname, "../mails/question-reply.ejs"),
+          data
+        );
+
+        try {
+          await sendMail({
+            email: question.user.email,
+            subject: "Question reply",
+            template: "question-reply.ejs",
+            data,
+          });
+        } catch (error: any) {
+          return next(new ErrorHandler(error.message, 500));
+        }
+      }
 
       res.status(200).json({
         success: true,

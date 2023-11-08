@@ -50,7 +50,7 @@ export const registerUser = CatchAsyncErrors(
         activationCode: token.activationCode,
       };
       const html = ejs.renderFile(
-        path.join(__dirname, "../mails/activation-email.ejs"),
+        path.join(__dirname, "../mails/activation-mail.ejs"),
         data
       );
 
