@@ -396,12 +396,9 @@ export const addReplyToReview = CatchAsyncErrors(async (req: Request, res: Respo
       };
 
       if(!review.commentReplies) {
-        // console.log("yhaaaaaaaaa")
         review.commentReplies = [];
       }
       review.commentReplies?.push(newReply);
-
-      // console.log(review, course);
 
       await course?.save();
 
@@ -414,12 +411,3 @@ export const addReplyToReview = CatchAsyncErrors(async (req: Request, res: Respo
         return next(new ErrorHandler(error.message, 500));
     }
 })
-
-// export const name = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-
-//     }
-//     catch(error: any) {
-//         return next(new ErrorHandler(error.message, 500));
-//     }
-// })
