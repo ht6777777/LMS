@@ -21,7 +21,7 @@ export const notificationSchema = new Schema<INotification>({
         required: true,
         default: "unread"
     }  
-});
+}, {timestamps: true});
 
 const notificationModel: Model<INotification> = model("Notification", notificationSchema);
 

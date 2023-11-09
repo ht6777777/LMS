@@ -4,6 +4,7 @@ import cors from "cors";
 import { ErrorMiddleware } from "./middleware/error";
 import userRouter from "./routes/user.route";
 import courseRouter from "./routes/course.route";
+import orderRouter from "./routes/order.route";
 require("dotenv").config();
 
 export const app = express();
@@ -19,8 +20,7 @@ app.use(
 
 app.use(cookieParser());
 
-app.use("/api/v1", userRouter);
-app.use("/api/v1", courseRouter);
+app.use("/api/v1", userRouter, courseRouter, orderRouter);
 
 // test API
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {

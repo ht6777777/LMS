@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation</title>
+  </head>
+  <body>
+    <header>
+      <h1>Your order is confirmed!</h1>
+    </header>
+
+    <main>
+      <h3>Here's what you ordered:</h3>
+      <section>
+        <p>Order Id  : #<%= _id %></p>
+        <p>Order Date: <%= date %></p>
+        <p>Item      : <%= name %></p>
+        <p>Qty       : 1</p>
+        <p>Price     : <%= price %></p>
+        <h3>Total    : <%= price %></h3>
+      </section>
+
+      <footer>
+        <p>If you have any question please contact our support team at <a href="mailto:contact.harsht67@gmail.com">contact.harsht67@gmail.com</a></p>
+      </footer>
+
+    </main>
+  </body>
+</html>

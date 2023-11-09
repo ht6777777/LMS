@@ -19,7 +19,7 @@ export const orderSchema = new Schema<IOrder>({
         type: Object,
         // required: true
     }
-});
+}, {timestamps: true});
 
 const orderModel: Model<IOrder> = model('Order', orderSchema);
 
